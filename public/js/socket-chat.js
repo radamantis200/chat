@@ -4,7 +4,7 @@ var params = new URLSearchParams(window.location.search);
 
 if (!params.has('nombre') || !params.has('sala')) {
     window.location = 'index.html';
-    throw new Error('Nombre y Sala son necesario!'); 
+    throw new Error('El nombre y sala son necesarios');
 }
 
 var usuario = {
@@ -12,40 +12,53 @@ var usuario = {
     sala: params.get('sala')
 };
 
-//"on" son para escuchar eventos!
+
+
 socket.on('connect', function() {
-    console.log('Conectado al servidor!');
-    socket.emit('entrarChat',usuario,function(resp){
-        console.log('usuarios conectados! ',resp);
+    console.log('Conectado al servidor');
+
+    socket.emit('entrarChat', usuario, function(resp) {
+        // console.log('Usuarios conectados', resp);
+        renderizarUsuario(resp);
     });
+
 });
 
-socket.on('disconnect', function () {
-    console.log('Perdimos conexión con el servidor!');
+// escuchar
+socket.on('disconnect', function() {
+
+    console.log('Perdimos conexión con el servidor');
+
 });
 
-//"emit" son para enviar eventos!
+
+// Enviar información
 // socket.emit('crearMensaje', {
-//     usuario: 'Jefry Sánchez',
-//     mensaje: 'Hola mundo!'
-// }, function (resp) {
-//     console.log('Respuesta del server: ', resp);
+//     nombre: 'Fernando',
+//     mensaje: 'Hola Mundo'
+// }, function(resp) {
+//     console.log('respuesta server: ', resp);
 // });
 
-
-//enviar mensaje del servidor al cliente informando que un cliente abandono el chat
-
-socket.on('crearMensaje', function (mensaje) {
-    console.log('Servidor', mensaje);
+// Escuchar información
+socket.on('crearMensaje', function(mensaje) {
+    // console.log('Servidor:', mensaje);
+    renderizarMensaje(mensaje,false);
+    scrollBottom();
 });
 
-//Escuchar cambios
-//cuando un usuario entra o sale del chat
-socket.on('listaPersona',function (personas){
-    console.log(personas);
+// Escuchar cambios de usuarios
+// cuando un usuario entra o sale del chat
+socket.on('listaPersona', function(personas) {
+    // console.log(personas);
+    renderizarUsuario(personas);
+    
 });
 
-//Mensaje Privado
-socket.on('mensajePrivado',function(mensaje){
+// Mensajes privados
+socket.on('mensajePrivado', function(mensaje) {
+
     console.log('Mensaje Privado:', mensaje);
+
 });
+
